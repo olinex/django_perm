@@ -87,3 +87,18 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Eclipse project settings
+.project
+.pydevproject
+.settings/
+
+# Django settings
+db.sqlite3
+settings.py
+migrations/0*.py
+
+# Windows:
+Thumbs.db
+ehthumbs.db
+Desktop.ini
