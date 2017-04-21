@@ -73,8 +73,8 @@ class PermInstanceWrapper(object):
         if name in ('_instance','_user'):
             self.__dict__[name]=value
         else:
-            inst=self.__getattribute__('_instance')
-            user=self.__getattribute__('_user')
+            inst=self.__dict__['_instance']
+            user=self.__dict__['_user']
             if inst.__class__.is_field_name(name):
                 field=inst._meta.get_field(name)
                 if not hasattr(field,'has_write_perm') or field.has_write_perm(user):
