@@ -60,8 +60,7 @@ class PermFieldMixin(object):
         return name, path, args, kwargs
     
     def has_read_perm(self,user):
-        if (user is None
-            or self.__perms['read'] is False
+        if (self.__perms['read'] is False
             or user.is_superuser
             or (self.__perms['read'] is not 'strict'
                 and user.has_perm(self.get_perm_label('read')))):
@@ -69,8 +68,7 @@ class PermFieldMixin(object):
         return False
     
     def has_write_perm(self,user):
-        if (user is None
-            or self.__perms['write'] is False
+        if (self.__perms['write'] is False
             or user.is_superuser
             or (self.__perms['write'] is not 'strict'
                 and user.has_perm(self.get_perm_label('write')))):

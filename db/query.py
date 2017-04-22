@@ -9,6 +9,12 @@ Created on 2017年4月16日
 
 from django.db import models
 
+def NotAllowMethod(*args,**kwargs):
+    '''
+    A method that replace all model instance method that always return False
+    '''
+    return False
+
 class NotAllow(object):
     '''
     when perm field was checked and not allow by user,the instance of the class will return
@@ -84,8 +90,7 @@ class PermInstanceWrapper(object):
                     raise PermissionError(
                         'No permission to set attribute {} of {}'.format(
                             name,inst._meta.object_name))
-                else:
-                    return
+                return
             setattr(inst, name, value)
             
 class PermBaseIterable(models.query.BaseIterable):

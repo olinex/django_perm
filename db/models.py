@@ -9,9 +9,10 @@ Created on 2017年4月14日
 
 from django.db import models
 from .manager import PermManager
+from django.contrib.auth.models import AnonymousUser
 
 class Model(models.Model):
-    def su(self,user=None,*,raise_error=False):
+    def su(self,user=AnonymousUser(),*,raise_error=False):
         '''
         return an instance of PermInstanceWrapper that can auto check 
         permission that user can read/write field
@@ -66,6 +67,16 @@ class Model(models.Model):
         return (
             tuple(field.get_perm_tuple('read') for field in cls.all_read_restrict_fields())+
             tuple(field.get_perm_tuple('write') for field in cls.all_write_restrict_fields()))
-            
+    
+    @classmethod
+    def has_model_perm(cls,perm_type,user):
+        if ( user.is_superuser or 
+            user.has_perm('{}.{}_{}'.format(
+            cls._meta.app_label,
+            perm_type,
+            cls._meta.object_name))):
+            return True
+        return False
+        
     class Meta:
         abstract=True
