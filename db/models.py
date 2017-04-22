@@ -7,10 +7,11 @@ Created on 2017年4月14日
 @author: olin
 '''
 
+from django.db import models
 from .manager import PermManager
 
-class PermModelMixin(object):
-    def su(self,user=None):
+class Model(models.Model):
+    def su(self,user=None,*,raise_error=False):
         '''
         return an instance of PermInstanceWrapper that can auto check 
         permission that user can read/write field
@@ -19,7 +20,7 @@ class PermModelMixin(object):
         '''
         from .query import PermInstanceWrapper
         if user is not None:
-            self._wrapper=PermInstanceWrapper(self,user)
+            self._wrapper=PermInstanceWrapper(self,user,raise_error=raise_error)
         return self._wrapper
     
     @classmethod
@@ -50,13 +51,13 @@ class PermModelMixin(object):
         return[field.name for field in cls._meta.fields if (not hasattr(field,'has_write_perm') or field.has_write_perm(user))]
     
     @classmethod
-    def sudo(cls,user):
+    def sudo(cls,user,*,raise_error=False):
         '''
         init manager's model and user attribute
         @param user: an instance of django auth User
         @return : an instance of django orm manager that have the ability to set each instance's su method
         '''
-        manager=PermManager(user)
+        manager=PermManager(user,raise_error=raise_error)
         manager.model=cls
         return manager
     
@@ -66,3 +67,5 @@ class PermModelMixin(object):
             tuple(field.get_perm_tuple('read') for field in cls.all_read_restrict_fields())+
             tuple(field.get_perm_tuple('write') for field in cls.all_write_restrict_fields()))
             
+    class Meta:
+        abstract=True

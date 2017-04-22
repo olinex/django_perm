@@ -54,9 +54,10 @@ class PermInstanceWrapper(object):
     a wrapper that contain model instance and user attrs that can check field permission
     when writting or reading permission restrict fields
     '''
-    def __init__(self,instance,user):
+    def __init__(self,instance,user,*,raise_error=False):
         self._instance=instance
         self._user=user
+        self._raise_error=raise_error
         
     def __getattr__(self,name):
         inst=self.__getattribute__('_instance')
@@ -70,7 +71,7 @@ class PermInstanceWrapper(object):
         return value
     
     def __setattr__(self,name,value):
-        if name in ('_instance','_user'):
+        if name in ('_instance','_user','_raise_error'):
             self.__dict__[name]=value
         else:
             inst=self.__dict__['_instance']
@@ -79,20 +80,24 @@ class PermInstanceWrapper(object):
                 field=inst._meta.get_field(name)
                 if not hasattr(field,'has_write_perm') or field.has_write_perm(user):
                     setattr(inst,name,value)
-                raise PermissionError(
-                    'No permission to set attribute {} of {}'.format(
-                        name,inst._meta.object_name))
+                elif self.__dict__['_raise_error']:
+                    raise PermissionError(
+                        'No permission to set attribute {} of {}'.format(
+                            name,inst._meta.object_name))
+                else:
+                    return
             setattr(inst, name, value)
             
 class PermBaseIterable(models.query.BaseIterable):
-    def __init__(self,queryset,chunked_fetch=False,*,user):
+    def __init__(self,queryset,chunked_fetch=False,*,user,raise_error=False):
         super(PermBaseIterable,self).__init__(queryset,chunked_fetch=False)
         self._user=user
+        self._raise_error=raise_error
 
 class PermModelIterable(PermBaseIterable,models.query.ModelIterable):
     def __iter__(self):
         for obj in super(PermModelIterable,self).__iter__():
-            obj.su(self._user)
+            obj.su(self._user,raise_error=self._raise_error)
             yield obj
             
 class PermValuesIterable(PermBaseIterable,models.query.ValuesIterable):
@@ -146,17 +151,21 @@ class PermFlatValuesListIterable(PermBaseIterable,models.query.FlatValuesListIte
                 yield NotAllow(value,name,field)
             
 class PermQuerySet(models.query.QuerySet):
-    def __init__(self, model=None, query=None, using=None, hints=None,*,user):
+    def __init__(self, model=None, query=None, using=None, hints=None,*,user,raise_error=False):
         '''
         must provide user value when QuerySet is initializing
         '''
         super(PermQuerySet,self).__init__(model,query,using,hints)
         self._user=user
+        self._raise_error=raise_error
         self._iterable_class=PermModelIterable
         
     def _fetch_all(self):
         if self._result_cache is None:
-            self._result_cache = list(self._iterable_class(self,user=self._user))
+            self._result_cache = list(
+                self._iterable_class(
+                    self,user=self._user,
+                    raise_error=self._raise_error))
         if self._prefetch_related_lookups and not self._prefetch_done:
             self._prefetch_related_objects()
         
@@ -166,6 +175,7 @@ class PermQuerySet(models.query.QuerySet):
             query.filter_is_sticky = True
         clone = self.__class__(
             user=self._user,
+            raise_error=self._raise_error,
             model=self.model, 
             query=query, 
             using=self._db, 
