@@ -27,7 +27,7 @@ class Command(BaseCommand):
             for model in apps.all_models[app_name].values():
                 for codename,name in model.field_perm_register():
                     model_content=ContentType.objects.get_for_model(model)
-                    perm=Permission.objects.create(
+                    perm=Permission.objects.get_or_create(
                         codename=codename,
                         name=name,
                         content_type=model_content)

@@ -86,6 +86,9 @@ class PermFieldMixin(object):
 class Field(PermFieldMixin,models.Field):
     pass
 
+class AutoField(PermFieldMixin,models.AutoField):
+    pass
+
 class BigAutoField(PermFieldMixin,models.BigAutoField):
     pass
 
@@ -123,9 +126,6 @@ class IntegerField(PermFieldMixin,models.IntegerField):
     pass
 
 class BigIntegerField(PermFieldMixin,models.BigIntegerField):
-    pass
-
-class IPAddressField(PermFieldMixin,models.IPAddressField):
     pass
 
 class GenericIPAddressField(PermFieldMixin,models.GenericIPAddressField):

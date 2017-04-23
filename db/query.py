@@ -30,12 +30,12 @@ class NotAllow(object):
     def __eq__(self,other):
         return False
     
-    __bool__ = __ge__ = __gt__ = __le__ = __lt__ = __ne__ = __eq__
+    __ge__ = __gt__ = __le__ = __lt__ = __ne__ = __eq__
     
     def __pos__(self):
         return self
     
-    __neg__ = __abs__ = __pos__
+    __bool__ = __neg__ = __abs__ = __pos__
     
     def __add__(self,other):
         return self
