@@ -6,6 +6,7 @@ djangoperm库的目标是实现开箱即用的django权限库,可以同时控制
 目前的1.0-dev版本仅实现了字段级的权限控制,且尚在进行测试.
 
 ## 依赖
+djangoperm库是Python3的项目,Python2无法使用
 djangoperm库是django的扩展库,依赖于django1.8版本以及其以上的版本,1.8之前的版本尚未经过测试,故无法保证能正常使用
 
 ## 使用
@@ -45,7 +46,7 @@ class Test(models.Model):
 ```Bash
 Python manage.py permregister <app> [<app2> <app3> ...]
 ```
-<app>代表需要自动创建权限记录的app名.需要强调的是,由于考虑到外键约束问题,`permregister`并不会扫描字段权限的变动并删除已经'自认为是失效的'权限记录,这种工作程序无法代劳,虽然我们在不久的将来会尝试一种clear命令来帮助使用者清除失效的权限记录,但我们也仍需让使用者自行决定
+app代表需要自动创建权限记录的应用.需要强调的是,由于考虑到外键约束问题,`permregister`并不会扫描字段权限的变动并删除已经'自认为是失效的'权限记录,这种工作程序无法代劳,虽然我们在不久的将来会尝试一种clear命令来帮助使用者清除失效的权限记录,但我们也仍需让使用者自行决定
 
 ### 在程序内控制权限
 在程序内控制权限非常的简单,我们的权限控制使用了一种`代理模式`,这种代理更像是一种'君子协议',它不会影响你现有的任何代码,但却提供了一种捷径让你可以更加简单的控制你的字段的读写
@@ -75,6 +76,9 @@ query=Test.sudo(user,raise_error=True).all()
 * NotAllow
 权限字段在进行未授权访问时,会返回`NotAllow`类的实例,这个类重写了所有的运算符重载方法,对它以及包含它的所有表达式求布尔值都将返回False,无论对它进行任何的数值运算,都将会返回其自身:
 ```Python
+>>> test=Test()
+>>> wrapper=test.su()
+>>> value=wrapper.test_char
 >>> value
 <djangoperm.db.query.NotAllow object at 0x007291F0>
 >>> -value

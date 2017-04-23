@@ -8,12 +8,7 @@ Created on 2017年4月16日
 '''
 
 from django.db import models
-
-def NotAllowMethod(*args,**kwargs):
-    '''
-    A method that replace all model instance method that always return False
-    '''
-    return False
+from operator import __matmul__
 
 class NotAllow(object):
     '''
@@ -32,18 +27,32 @@ class NotAllow(object):
     
     __ge__ = __gt__ = __le__ = __lt__ = __ne__ = __eq__
     
+    def __bool__(self):
+        return False
+    
     def __pos__(self):
         return self
     
-    __bool__ = __neg__ = __abs__ = __pos__
+    def __int__(self):
+        return 0
+    
+    __len__ = __int__
+    
+    def __float__(self):
+        return float(0)
+    
+    def __index__(self):
+        return 0
+    
+    __invert__=__neg__=__abs__=__pos__
     
     def __add__(self,other):
         return self
     
-    __sub__ = __mul__ = __floordiv__ = __div__ = __mod__ = __divmod___ = __add__
+    __sub__=__mul__=__matmul__=__floordiv__=__truediv__=__mod__=__divmod___=__add__
     __mod__ = __divmod___ = __pow__ = __lshift__ = __rshift__ = __and__ = __or__ = __xor__ = __add__
     
-    __rsub__ = __rmul__ = __rfloordiv__ = __rdiv__ = __rmod__ = __rdivmod___ = __rxor__= __radd__ = __add__
+    __rsub__=__rmul__=__rmatmul__=__rfloordiv__=__rtruediv__=__rmod__=__rdivmod___=__rxor__=__radd__=__add__
     __rmod__ = __rdivmod___ = __rpow__ = __rlshift__ = __rrshift__ = __rand__ = __ror__  = __add__
     
     def __str__(self):
