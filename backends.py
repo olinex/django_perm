@@ -17,7 +17,7 @@ class ObjectPermissionBackend(object):
         return None
     
     def get_all_permissions(self, user_obj, obj=None):
-        if not user_obj.is_active or user_obj.is_anonymous:
+        if not user_obj.is_active or not user_obj.is_authenticated:
             return set()
         if obj is not None:
             return PermInstance.get_all_codenames(user_obj,obj)

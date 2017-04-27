@@ -70,7 +70,7 @@ class Model(models.Model):
     
     @classmethod
     def has_model_perm(cls,perm_type,user):
-        if ( user.is_superuser or 
+        if user.is_authenticated and (user.is_superuser or 
             user.has_perm('{}.{}_{}'.format(
             cls._meta.app_label,
             perm_type,

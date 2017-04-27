@@ -8,7 +8,6 @@ Created on 2017年4月16日
 '''
 
 from django.db import models
-from operator import __matmul__
 
 class NotAllow(object):
     '''
@@ -56,10 +55,13 @@ class NotAllow(object):
     __rmod__ = __rdivmod___ = __rpow__ = __rlshift__ = __rrshift__ = __rand__ = __ror__  = __add__
     
     def __str__(self):
-        return 'NotAllow'
+        from django.conf import settings
+        if hasattr(settings,'PERM_NOT_ALLOW_NOTICE'):
+            return settings.PERM_NOT_ALLOW_NOTICE
+        return ''
     
-    def repr__(self):
-        return 'NotAllow {}:{}'.format(self._name,self._value)
+    def __repr__(self):
+        return 'NotAllow {}'.format(self._name)
     
     def __sizeof__(self):
         return 0
@@ -174,6 +176,19 @@ class PermQuerySet(models.query.QuerySet):
         self._raise_error=raise_error
         self._iterable_class=PermModelIterable
         
+    def _clean_kwargs(self,kwargs):
+        readwable_fields=self.model.writeable_fields_name(self._user)
+        if self._raise_error:
+            clean_kwargs={}
+            for k,v in kwargs.items():
+                if k not in readwable_fields:
+                    raise PermissionError('No permission to set attribute {} of {}'.format(
+                        k,self.model._meta.object_name))
+                clean_kwargs[k]=v
+        else:
+            clean_kwargs={k:v for k,v in kwargs.items() if k in readwable_fields}
+        return clean_kwargs
+        
     def _fetch_all(self):
         if self._result_cache is None:
             self._result_cache = list(
@@ -213,3 +228,7 @@ class PermQuerySet(models.query.QuerySet):
         clone=super(PermQuerySet,self).values_list(*fields,**kwargs)
         clone._iterable_class = PermFlatValuesListIterable if flat else PermValuesListIterable
         return clone
+    
+    def create(self,**kwargs):
+        kwargs=self._clean_kwargs(kwargs=kwargs)
+        return super(PermQuerySet,self).create(kwargs)

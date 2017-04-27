@@ -53,14 +53,15 @@ class PermFieldMixin(object):
                 self.model._meta.app_label,
                 self.model._meta.object_name,
                 self.name))
-
+        
     def deconstruct(self):
         name,path,args,kwargs=getattr(models,self.__class__.__name__).deconstruct(self)
         kwargs['perms'] = self.__perms
         return name, path, args, kwargs
     
     def has_read_perm(self,user):
-        if (self.__perms['read'] is False
+        if user.is_authenticated and (
+            self.__perms['read'] is False
             or user.is_superuser
             or (self.__perms['read'] is not 'strict'
                 and user.has_perm(self.get_perm_label('read')))):
@@ -68,7 +69,8 @@ class PermFieldMixin(object):
         return False
     
     def has_write_perm(self,user):
-        if (self.__perms['write'] is False
+        if user.is_authenticated and (
+            self.__perms['write'] is False
             or user.is_superuser
             or (self.__perms['write'] is not 'strict'
                 and user.has_perm(self.get_perm_label('write')))):

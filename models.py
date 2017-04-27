@@ -56,7 +56,7 @@ class PermInstance(models.Model):
     obj=GenericForeignKey('contentType','instanceId')
     
     class Meta:
-        unique_together=('user','instanceId','instanceId')
+        unique_together=('user','codename','instanceId','contentType')
         
     @classmethod
     def get_all_codenames(cls,user,obj=None):
@@ -85,9 +85,11 @@ class PermInstance(models.Model):
         @param user:an instance if User
         @param obj:an Model instance
         '''
-        ct=ContentType.objects.get_for_model(obj)
-        return cls.objects.get_or_create(
-            codename=codename,
-            user=user,
-            contentType=ct,
-            instanceId=obj.pk)
+        if user.is_authenticated:
+            ct=ContentType.objects.get_for_model(obj)
+            return cls.objects.get_or_create(
+                codename=codename,
+                user=user,
+                contentType=ct,
+                instanceId=obj.pk)
+        return (None,False)
