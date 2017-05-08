@@ -102,3 +102,6 @@ migrations/0*.py
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+# Pycharm
+.idea/

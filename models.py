@@ -6,11 +6,118 @@ Created on 2017年4月23日
 
 @author: olin
 '''
-
+import uuid
+from datetime import timedelta
+from djangoperm.db import fields
+from djangoperm.db.models import Model
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+
+class Test(Model):
+    '''
+    test perm field
+    '''
+    test_big_auto=fields.BigAutoField(
+        default=1,
+        primary_key=True,perms={'read':True,'write':True})
+
+    test_bool=fields.BooleanField(
+        default=False,
+        perms={'read':True,'write':True})
+
+    test_comma_int=fields.CommaSeparatedIntegerField(
+        default='',
+        max_length=90,perms={'read':True,'write':True})
+
+    test_date=fields.DateField(
+        auto_now_add=True,
+        perms={'read':True,'write':True})
+
+    test_date_time=fields.DateTimeField(
+        auto_now_add=True,
+        perms={'read':True,'write':True})
+
+    test_decimal=fields.DecimalField(
+        default=0.00,
+        decimal_places=2,
+        max_digits=8,
+        perms={'read':True,'write':True})
+
+    test_duration=fields.DurationField(
+        default=timedelta(microseconds=100),
+        perms={'read':True,'write':True})
+
+    test_email=fields.EmailField(
+        default='test@test.com',
+        perms={'read':True,'write':True})
+
+    test_filepath=fields.FilePathField(
+        default='',
+        perms={'read':True,'write':True})
+
+    test_float=fields.FloatField(
+        default=0.0,
+        perms={'read':True,'write':True})
+
+    test_big_int=fields.BigIntegerField(
+        default=0,
+        perms={'read':True,'write':True})
+
+    test_generic_ip=fields.GenericIPAddressField(
+        default='192.168.1.1',
+        perms={'read':True,'write':True})
+
+    test_null_bool=fields.NullBooleanField(
+        default=None,
+        perms={'read':True,'write':True})
+
+    test_pos_int=fields.PositiveIntegerField(
+        default=1,
+        perms={'read':True,'write':True})
+
+    test_pos_small_int=fields.PositiveSmallIntegerField(
+        default=2,
+        perms={'read':True,'write':True})
+
+    test_slug=fields.SlugField(
+        default='',
+        perms={'read':True,'write':True})
+
+    test_small_int=fields.SmallIntegerField(
+        default=3,
+        perms={'read':True,'write':True})
+    test_text=fields.TextField(
+        default='test for text',
+        perms={'read':True,'write':True})
+
+    test_time=fields.TimeField(
+        auto_now_add=True,
+        perms={'read':True,'write':True})
+
+    test_url=fields.URLField(
+        default='www.google.com',
+        perms={'read':True,'write':True})
+
+    test_bin=fields.BinaryField(
+        default=b'111',
+        perms={'read':True,'write':True})
+    test_uuid=fields.UUIDField(
+        default=uuid.uuid4,
+        perms={'read':True,'write':True})
+
+    test_char=fields.CharField(
+        'test_char',
+        max_length=14,
+        perms={'read':True,'write':True},
+        help_text='a perm CharField')
+
+    test_int=fields.IntegerField(
+        'test_int',
+        default=1,
+        perms={'read':True,'write':True},
+        help_text='a perm IntegerField')
 
 class PermInstance(models.Model):
     '''
