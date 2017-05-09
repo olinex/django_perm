@@ -13,7 +13,7 @@ class ObjectPermissionBackend(object):
     '''
     A backend that can reset user's has_perm method
     '''
-    def authticate(self,username,password):
+    def authenticate(self,username,password):
         return None
     
     def get_all_permissions(self, user_obj, obj=None):
