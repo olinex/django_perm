@@ -7,11 +7,12 @@ Created on 2017年4月23日
 @author: olin
 '''
 import uuid
+from django.conf import settings
 from datetime import timedelta
 from djangoperm.db import fields
 from djangoperm.db.models import Model
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User,Permission
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
@@ -200,3 +201,46 @@ class PermInstance(models.Model):
                 contentType=ct,
                 instanceId=obj.pk)
         return (None,False)
+
+class View(models.Model):
+    '''
+    the model of every view
+    '''
+    app_label = fields.CharField(
+        'app label',
+        null=False,
+        blank=False,
+        max_length=30,
+        help_text="view's app name"
+    )
+
+    name = fields.CharField(
+        'view name',
+        null=False,
+        blank=False,
+        max_length=30,
+        help_text="view's name"
+    )
+
+    method = fields.CharField(
+        'access method',
+        null=False,
+        blank=False,
+        max_length=10,
+        choices=((method,method.lower()) for method in settings.ALLOWED_METHODS),
+        help_text="the method to access view",
+    )
+
+    permission = fields.ForeignKey(
+        Permission,
+        null=False,
+        blank=False,
+        verbose_name='about permission',
+        help_text="The permission of the view"
+    )
+
+    class Meta:
+        unique_together=[
+            ('app_label','method','name'),
+        ]
+

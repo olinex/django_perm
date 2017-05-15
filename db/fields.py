@@ -155,7 +155,6 @@ class TimeField(PermFieldMixin,models.TimeField):
     pass
 
 class URLField(PermFieldMixin,models.URLField):
-    
     pass
 
 class BinaryField(PermFieldMixin,models.BinaryField):
@@ -163,3 +162,7 @@ class BinaryField(PermFieldMixin,models.BinaryField):
 
 class UUIDField(PermFieldMixin,models.UUIDField):
     pass
+
+ForeignKey = models.ForeignKey
+OneToOneField = models.OneToOneField
+ManyToManyField = models.ManyToManyField

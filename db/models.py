@@ -10,6 +10,7 @@ Created on 2017年4月14日
 from django.db import models
 from .manager import PermManager
 from django.contrib.auth.models import AnonymousUser
+from .fields import *
 
 class Model(models.Model):
     def su(self,user=AnonymousUser(),*,raise_error=False):
