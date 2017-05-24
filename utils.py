@@ -9,7 +9,7 @@ Created on 2017年4月23日
 
 from .models import PermInstance
 
-set_perm=PermInstance.set_perm
+set_instance_perm=PermInstance.set_instance_perm
 
 def has_view_perm(request):
     '''

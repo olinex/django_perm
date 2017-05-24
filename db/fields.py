@@ -100,9 +100,6 @@ class BooleanField(PermFieldMixin,models.BooleanField):
 class CharField(PermFieldMixin,models.CharField):
     pass
 
-class CommaSeparatedIntegerField(PermFieldMixin,models.CommaSeparatedIntegerField):
-    pass
-
 class DateField(PermFieldMixin,models.DateField):
     pass
 

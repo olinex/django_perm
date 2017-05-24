@@ -60,22 +60,22 @@ class PermInstanceCase(TestCase):
             email='demouser@163.com',
             password=''.join(random.sample(string.ascii_letters,10)))
         self.anonuser=AnonymousUser()
-        self.demo.set_perm('test',self.superuser,self.superuser)
-        self.demo.set_perm('test',self.normaluser,self.normaluser)
-        self.demo.set_perm('test',self.anonuser,self.anonuser)
-        self.demo.set_perm('test1',self.superuser,self.superuser)
-        self.demo.set_perm('test1',self.normaluser,self.normaluser)
-        self.demo.set_perm('test1',self.anonuser,self.anonuser)
-        self.demo.set_perm('test2',self.superuser,self.superuser)
-        self.demo.set_perm('test2',self.normaluser,self.normaluser)
-        self.demo.set_perm('test2',self.anonuser,self.anonuser)
+        self.demo.set_instance_perm('test',self.superuser,self.superuser)
+        self.demo.set_instance_perm('test',self.normaluser,self.normaluser)
+        self.demo.set_instance_perm('test',self.anonuser,self.anonuser)
+        self.demo.set_instance_perm('test1',self.superuser,self.superuser)
+        self.demo.set_instance_perm('test1',self.normaluser,self.normaluser)
+        self.demo.set_instance_perm('test1',self.anonuser,self.anonuser)
+        self.demo.set_instance_perm('test2',self.superuser,self.superuser)
+        self.demo.set_instance_perm('test2',self.normaluser,self.normaluser)
+        self.demo.set_instance_perm('test2',self.anonuser,self.anonuser)
         
-    def test_set_perm(self):
-        from djangoperm.utils import set_perm
+    def test_set_instance_perm(self):
+        from djangoperm.utils import set_instance_perm
         for perm in ['test','test1','test2']:
-            superuser_perm=set_perm(perm,self.superuser,self.superuser)
-            normaluser_perm=set_perm(perm,self.normaluser,self.normaluser)
-            anonuser_perm=set_perm(perm,self.anonuser,self.anonuser)
+            superuser_perm=set_instance_perm(perm,self.superuser,self.superuser)
+            normaluser_perm=set_instance_perm(perm,self.normaluser,self.normaluser)
+            anonuser_perm=set_instance_perm(perm,self.anonuser,self.anonuser)
             self.assertIsInstance(superuser_perm[0],self.demo)
             self.assertIsInstance(normaluser_perm[0],self.demo)
             self.assertIsNone(anonuser_perm[0])

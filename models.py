@@ -28,10 +28,6 @@ class Test(Model):
         default=False,
         perms={'read':True,'write':True})
 
-    test_comma_int=fields.CommaSeparatedIntegerField(
-        default='',
-        max_length=90,perms={'read':True,'write':True})
-
     test_date=fields.DateField(
         auto_now_add=True,
         perms={'read':True,'write':True})
@@ -164,6 +160,8 @@ class PermInstance(models.Model):
     obj=GenericForeignKey('contentType','instanceId')
     
     class Meta:
+        verbose_name='对象权限实例'
+        verbose_name_plural='对象权限实例'
         unique_together=('user','codename','instanceId','contentType')
         
     @classmethod
@@ -186,7 +184,7 @@ class PermInstance(models.Model):
         return set(cls.objects.filter(**option).values_list('codename',flat=True))
         
     @classmethod
-    def set_perm(cls,codename,user,obj):
+    def set_instance_perm(cls,codename,user,obj):
         '''
         create a permission about obj and user
         @param codename: a string about the permission
@@ -240,7 +238,8 @@ class View(models.Model):
     )
 
     class Meta:
+        verbose_name='视图权限实例'
+        verbose_name_plural='视图权限实例'
         unique_together=[
             ('app_label','method','name'),
         ]
-
