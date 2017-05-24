@@ -31,7 +31,7 @@ djangoperm库是django的扩展库,依赖于django1.8版本以及其以上的版
 前者可以设置对象级权限,后者可以装饰视图,控制用户对视图的访问.
 
 ## 设置
-要使用我们的djangoperm,必须将djangoperm库放置在PYTHONPATH或系统Path下,
+* 要使用我们的djangoperm,必须将djangoperm库放置在PYTHONPATH或系统Path下,
 并在项目的settings.INSTALLED_APPS下注册djangoperm
 ```
 INSTALLED_APPS = [
@@ -40,6 +40,15 @@ INSTALLED_APPS = [
     'djangoperm',
 ]
 ```
+
+* 对象级权限的实现需要使用到中间件,因此需要在settings.py内设置对应的backends
+```Python
+AUTHENTICATION_BACKENDS=(
+    'django.contrib.auth.backends.ModelBackend',
+    'djangoperm.backends.ObjectPermissionBackend',
+)
+```
+`django.contrib.auth.backends.ModelBackend`是django默认的中间件,必须填写
 
 ## 使用
 
