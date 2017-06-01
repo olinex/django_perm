@@ -116,6 +116,22 @@ class Test(Model):
         perms={'read':True,'write':True},
         help_text='a perm IntegerField')
 
+    test_json_list=fields.JSONField(
+        'test_json_list',
+        json_type='list',
+        default=[1,2,3,4],
+        perms={'read':True,'write':True},
+        help_text="json list"
+    )
+
+    test_json_dict=fields.JSONField(
+        'test_json_dict',
+        json_type='dict',
+        perms={'read':True,'write':True},
+        default={'read':True,'write':False},
+        help_text="json dict"
+    )
+
 class PermInstance(models.Model):
     '''
     This table related the Model instance and user that can control user's 

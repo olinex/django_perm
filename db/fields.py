@@ -7,15 +7,17 @@ Created on 2017年4月12日
 @author: olin
 '''
 
+import json
 from django.db import models
+from django.core.serializers.json import DjangoJSONEncoder
+from django.core.exceptions import ValidationError
 
-class PermFieldMixin(object):
-
-    def __init__(self,*args,perms={'read':False,'write':False},**kwargs):
-        '''
-        register the default field permissions to fields
-        @param perms:a dict that contain both 'read' and 'write' attributes,which value must be the one of True/False/'strict'
-        '''
+def _perm_init(field,perms):
+    '''
+    register the default field permissions to fields
+    @param perms:a dict that contain both 'read' and 'write' attributes,which value must be the one of True/False/'strict'
+    '''
+    if perms:
         if len(perms) == 2:
             for key,value in perms.items():
                 if key not in ('read','write'):
@@ -24,9 +26,10 @@ class PermFieldMixin(object):
                     raise ValueError("permission value must be True(enable)/False(disable)/'strict'")
         else:
             raise ValueError("perms attributes must contain both 'read' and 'write'")
-        self.__perms=perms
-        return getattr(models,self.__class__.__name__).__init__(self,*args,**kwargs)
-    
+    field.perms=perms if perms else {'read':False,'write':False}
+
+class PermFieldMixin(object):
+
     def get_perm_label(self,perm_type):
         '''
         return string of app label,model label and field name
@@ -54,25 +57,21 @@ class PermFieldMixin(object):
                 self.model._meta.object_name,
                 self.name))
         
-    def deconstruct(self):
-        name,path,args,kwargs=getattr(models,self.__class__.__name__).deconstruct(self)
-        kwargs['perms'] = self.__perms
-        return name, path, args, kwargs
-    
+
     def has_read_perm(self,user):
         if user.is_authenticated and (
-            self.__perms['read'] is False
+            self.perms['read'] is False
             or user.is_superuser
-            or (self.__perms['read'] is not 'strict'
+            or (self.perms['read'] is not 'strict'
                 and user.has_perm(self.get_perm_label('read')))):
             return True
         return False
     
     def has_write_perm(self,user):
         if user.is_authenticated and (
-            self.__perms['write'] is False
+            self.perms['write'] is False
             or user.is_superuser
-            or (self.__perms['write'] is not 'strict'
+            or (self.perms['write'] is not 'strict'
                 and user.has_perm(self.get_perm_label('write')))):
             return True
         return False
@@ -85,80 +84,291 @@ class PermFieldMixin(object):
 #    'PositiveSmallIntegerField','SlugField','SmallIntegerField','TextField',
 #    'TimeField','URLField','BinaryField','UUIDField'
 
-class Field(PermFieldMixin,models.Field):
-    pass
+class Field(models.Field,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self,perms=perms)
+        super(Field,self).__init__(*args,**kwargs)
 
-class AutoField(PermFieldMixin,models.AutoField):
-    pass
+    def deconstruct(self):
+        name,path,args,kwargs=super(Field,self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
 
-class BigAutoField(PermFieldMixin,models.BigAutoField):
-    pass
+class AutoField(models.AutoField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self,perms=perms)
+        super(AutoField,self).__init__(*args,**kwargs)
 
-class BooleanField(PermFieldMixin,models.BooleanField):
-    pass
+    def deconstruct(self):
+        name,path,args,kwargs=super(AutoField,self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
 
-class CharField(PermFieldMixin,models.CharField):
-    pass
+class BigAutoField(models.BigAutoField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self,perms=perms)
+        super(BigAutoField,self).__init__(*args,**kwargs)
 
-class DateField(PermFieldMixin,models.DateField):
-    pass
+    def deconstruct(self):
+        name,path,args,kwargs=super(BigAutoField,self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
 
-class DateTimeField(PermFieldMixin,models.DateTimeField):
-    pass
+class BooleanField(models.BooleanField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self,perms=perms)
+        super(BooleanField,self).__init__(*args,**kwargs)
 
-class DecimalField(PermFieldMixin,models.DecimalField):
-    pass
+    def deconstruct(self):
+        name,path,args,kwargs=super(BooleanField,self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
 
-class DurationField(PermFieldMixin,models.DurationField):
-    pass
+class CharField(models.CharField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self,perms=perms)
+        super(CharField,self).__init__(*args,**kwargs)
 
-class EmailField(PermFieldMixin,models.EmailField):
-    pass
+    def deconstruct(self):
+        name,path,args,kwargs=super(CharField,self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
 
-class FilePathField(PermFieldMixin,models.FilePathField):
-    pass
+class DateField(models.DateField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self, perms=perms)
+        super(DateField, self).__init__(*args, **kwargs)
 
-class FloatField(PermFieldMixin,models.FloatField):
-    pass
+    def deconstruct(self):
+        name, path, args, kwargs = super(DateField, self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
 
-class IntegerField(PermFieldMixin,models.IntegerField):
-    pass
+class DateTimeField(models.DateTimeField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self, perms=perms)
+        super(DateTimeField, self).__init__(*args, **kwargs)
 
-class BigIntegerField(PermFieldMixin,models.BigIntegerField):
-    pass
+    def deconstruct(self):
+        name, path, args, kwargs = super(DateTimeField, self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
 
-class GenericIPAddressField(PermFieldMixin,models.GenericIPAddressField):
-    pass
+class DecimalField(models.DecimalField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self, perms=perms)
+        super(DecimalField, self).__init__(*args, **kwargs)
 
-class NullBooleanField(PermFieldMixin,models.NullBooleanField):
-    pass
+    def deconstruct(self):
+        name, path, args, kwargs = super(DecimalField, self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
 
-class PositiveIntegerField(PermFieldMixin,models.PositiveIntegerField):
-    pass
+class DurationField(models.DurationField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self, perms=perms)
+        super(DurationField, self).__init__(*args, **kwargs)
 
-class PositiveSmallIntegerField(PermFieldMixin,models.PositiveSmallIntegerField):
-    pass
+    def deconstruct(self):
+        name, path, args, kwargs = super(DurationField, self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
 
-class SlugField(PermFieldMixin,models.SlugField):
-    pass
+class EmailField(models.EmailField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self, perms=perms)
+        super(EmailField, self).__init__(*args, **kwargs)
 
-class SmallIntegerField(PermFieldMixin,models.SmallIntegerField):
-    pass
+    def deconstruct(self):
+        name, path, args, kwargs = super(EmailField, self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
 
-class TextField(PermFieldMixin,models.TextField):
-    pass
+class FilePathField(models.FilePathField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self, perms=perms)
+        super(FilePathField, self).__init__(*args, **kwargs)
 
-class TimeField(PermFieldMixin,models.TimeField):
-    pass
+    def deconstruct(self):
+        name, path, args, kwargs = super(FilePathField, self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
 
-class URLField(PermFieldMixin,models.URLField):
-    pass
+class FloatField(models.FloatField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self, perms=perms)
+        super(FloatField, self).__init__(*args, **kwargs)
 
-class BinaryField(PermFieldMixin,models.BinaryField):
-    pass
+    def deconstruct(self):
+        name, path, args, kwargs = super(FloatField, self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
 
-class UUIDField(PermFieldMixin,models.UUIDField):
-    pass
+class IntegerField(models.IntegerField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self, perms=perms)
+        super(IntegerField, self).__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(IntegerField, self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
+
+class BigIntegerField(models.BigIntegerField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self, perms=perms)
+        super(BigIntegerField, self).__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(BigIntegerField, self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
+
+class GenericIPAddressField(models.GenericIPAddressField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self, perms=perms)
+        super(GenericIPAddressField, self).__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(GenericIPAddressField, self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
+
+class NullBooleanField(models.NullBooleanField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self, perms=perms)
+        super(NullBooleanField, self).__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(NullBooleanField, self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
+
+class PositiveIntegerField(models.PositiveIntegerField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self, perms=perms)
+        super(PositiveIntegerField, self).__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(PositiveIntegerField, self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
+
+class PositiveSmallIntegerField(models.PositiveSmallIntegerField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self, perms=perms)
+        super(PositiveSmallIntegerField, self).__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(PositiveSmallIntegerField, self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
+
+class SlugField(models.SlugField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self, perms=perms)
+        super(SlugField, self).__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(SlugField, self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
+
+class SmallIntegerField(models.SmallIntegerField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self, perms=perms)
+        super(SmallIntegerField, self).__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(SmallIntegerField, self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
+
+class TextField(models.TextField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self, perms=perms)
+        super(TextField, self).__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(TextField, self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
+
+class TimeField(models.TimeField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self, perms=perms)
+        super(TimeField, self).__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(TimeField, self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
+
+class URLField(models.URLField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self, perms=perms)
+        super(URLField, self).__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(URLField, self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
+
+class BinaryField(models.BinaryField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self, perms=perms)
+        super(BinaryField, self).__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(BinaryField, self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
+
+class UUIDField(models.UUIDField,PermFieldMixin):
+    def __init__(self,*args,perms=None,**kwargs):
+        _perm_init(field=self, perms=perms)
+        super(UUIDField, self).__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(UUIDField, self).deconstruct()
+        kwargs['perms'] = self.perms
+        return name, path, args, kwargs
+
+class JSONField(TextField):
+
+    def _json_serializer(self,value):
+        if value is None:
+            return value
+        json_value=json.loads(value)
+        if isinstance(json_value,eval(self.json_type)):
+            return json_value
+        raise ValidationError("value from database must be json string of {}".format(self.json_type))
+
+    def __init__(self,*args,json_type='list',**kwargs):
+        type_list=['list','dict']
+        if json_type in type_list:
+            self.json_type=json_type
+            super(JSONField,self).__init__(*args,**kwargs)
+        else:
+            raise ValueError("json_type must be one of " + ','.join(type_list))
+
+    def deconstruct(self):
+        name,path,args,kwargs = super(JSONField,self).deconstruct()
+        kwargs['json_type'] = self.json_type
+        return name,path,args,kwargs
+
+    def from_db_value(self,value,expression,connection,context):
+        return self._json_serializer(value)
+
+    def to_python(self, value):
+        return self._json_serializer(value)
+
+    def get_prep_value(self, value):
+        if value is None or value == '':
+            return value
+        if isinstance(value,eval(self.json_type)):
+            return json.dumps(value,cls=DjangoJSONEncoder)
+        raise ValidationError("value from user must be {} type object".format(self.json_type))
 
 ForeignKey = models.ForeignKey
 OneToOneField = models.OneToOneField

@@ -229,7 +229,7 @@ ALLOWED_METHODS = ['GET','POST','HEAD','PUT','PATCH','OPTIONS','DELETE']
 
 ##### 第二步
 为每个app下的url配置好`name`属性,并不需要过于紧张,只要你正常的进行django开发,
-这一步操作事实上已经你已经做好
+这一步操作事实上你已经做好
 ```Python
 urlpatterns = [
     url(r'^$', your_view, name='first_request'),

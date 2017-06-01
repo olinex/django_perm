@@ -159,16 +159,10 @@ class FieldPermMethodCase(TestCase):
                     Test._meta.object_name,
                     field.name)))
             
-    def test_decostruct(self):
-        for field in self.demo._meta.fields:
-            self.assertEqual(
-                field.deconstruct(),
-                super(field.__class__,field).deconstruct())
-            
     def test_has_perm(self):
         for field in self.demo._meta.fields:
-            field._PermFieldMixin__perms['read']=False
-            field._PermFieldMixin__perms['write']=False
+            field.perms['read']=False
+            field.perms['write']=False
             self.assertTrue(
                 field.has_read_perm(self.superuser))
             self.assertTrue(
@@ -182,8 +176,8 @@ class FieldPermMethodCase(TestCase):
             self.assertFalse(
                 field.has_write_perm(self.anonuser))
             
-            field._PermFieldMixin__perms['read']=True
-            field._PermFieldMixin__perms['write']=True
+            field.perms['read']=True
+            field.perms['write']=True
             self.assertTrue(
                 field.has_read_perm(self.superuser))
             self.assertTrue(
@@ -197,8 +191,8 @@ class FieldPermMethodCase(TestCase):
             self.assertFalse(
                 field.has_write_perm(self.anonuser))
             
-            field._PermFieldMixin__perms['read']='strict'
-            field._PermFieldMixin__perms['write']='strict'
+            field.perms['read']='strict'
+            field.perms['write']='strict'
             self.assertTrue(
                 field.has_read_perm(self.superuser))
             self.assertTrue(
