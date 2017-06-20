@@ -9,11 +9,14 @@ import string
 from django.contrib.auth.models import AnonymousUser
 from django.test import TestCase, Client
 from .models import Test
-from django.contrib.auth.models import User
+from django.conf import settings
 from djangoperm.db.query import NotAllow
+from django.contrib.auth import get_user_model
+
+User=get_user_model()
 
 class ViewPermDecoratorCase(TestCase):
-    
+
     def setUp(self):
         self.client=Client(enforce_csrf_checks=True)
         self.passwd=''.join(random.sample(string.ascii_letters,10))
@@ -26,7 +29,7 @@ class ViewPermDecoratorCase(TestCase):
             email='demouser@163.com',
             password=self.passwd)
         self.anonuser=AnonymousUser()
-        
+
     def test_all_methods(self):
         methods=('GET','POST','HEAD','PUT','DELETE','OPTIONS','TRACE','PATCH')
         self.assertTrue(self.client.login(username='testsuperuser',password=self.passwd))

@@ -12,7 +12,7 @@ from datetime import timedelta
 from djangoperm.db import fields
 from djangoperm.db.models import Model
 from django.db import models
-from django.contrib.auth.models import User,Permission
+from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
@@ -138,7 +138,7 @@ class PermInstance(models.Model):
     accessing of instance
     '''
     user=models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         null=False,
         blank=False,
         on_delete=models.CASCADE,
