@@ -401,7 +401,7 @@ class ShortJSONField(CharField):
         if value is None:
             return value
         json_value = json.loads(value)
-        if isinstance(json_value, eval(self.json_type)):
+        if isinstance(json_value, list if self.json_type == 'list' else dict):
             return json_value
         raise ValidationError("value from database must be json string of {}".format(self.json_type))
 
@@ -427,7 +427,7 @@ class ShortJSONField(CharField):
     def get_prep_value(self, value):
         if value is None or value == '':
             return value
-        if isinstance(value, eval(self.json_type)):
+        if isinstance(value, list if self.json_type == 'list' else dict):
             return json.dumps(value, cls=DjangoJSONEncoder)
         raise ValidationError("value from user must be {} type object".format(self.json_type))
 
