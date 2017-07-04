@@ -6,4 +6,6 @@ Created on 2017年4月12日
 
 @author: olin
 '''
+
+default_app_config = 'djangoperm.apps.DjangopermConfig'
         

@@ -31,7 +31,6 @@ class ViewPermDecoratorCase(TestCase):
         self.anonuser=AnonymousUser()
 
     def test_all_methods(self):
-        methods=('GET','POST','HEAD','PUT','DELETE','OPTIONS','TRACE','PATCH')
         self.assertTrue(self.client.login(username='testsuperuser',password=self.passwd))
         self.assertEqual(self.client.get('/test',follow=True).status_code,200)
         self.assertEqual(self.client.post('/test',follow=True).status_code,200)
