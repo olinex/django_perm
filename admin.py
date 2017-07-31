@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 #-*- coding:utf-8 -*-
 
-from . import models
 from django.contrib import admin
+
+from . import models
+
 
 @admin.register(models.PermInstance)
 class PermInstanceAdmin(admin.ModelAdmin):

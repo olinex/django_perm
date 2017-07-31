@@ -7,9 +7,8 @@ Created on 2017年4月20日
 @author: olin
 '''
 
-from django.urls import RegexURLPattern,RegexURLResolver
 from django.core.management.base import BaseCommand, CommandError
-
+from django.urls import RegexURLPattern, RegexURLResolver
 
 
 def url_recursive(urls):
@@ -61,11 +60,10 @@ class Command(BaseCommand):
         import importlib
         from django.apps import apps
         from django.conf import settings
-        from functools import reduce
         from django.db import transaction
         from django.contrib.auth.models import Permission
         from django.contrib.contenttypes.models import ContentType
-        from djangoperm.models import View
+        from apps.djangoperm import View
         error_apps=[app for app in options['app_names'] if app not in settings.INSTALLED_APPS]
         if error_apps:
             raise CommandError('Unknown apps:{}'.format(','.join(error_apps)))

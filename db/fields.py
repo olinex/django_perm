@@ -7,6 +7,17 @@ Created on 2017年4月12日
 @author: olin
 '''
 
+__all__ = (
+    'AutoField', 'BigAutoField', 'BigIntegerField',
+    'BinaryField', 'BooleanField', 'CharField', 'DateField',
+    'DateTimeField', 'DecimalField', 'DurationField',
+    'EmailField', 'Field', 'FilePathField', 'FloatField', 'ForeignKey',
+    'GenericIPAddressField', 'IntegerField', 'JSONField', 'ManyToManyField',
+    'NullBooleanField', 'OneToOneField', 'PermFieldMixin', 'PositiveIntegerField',
+    'PositiveSmallIntegerField', 'ShortJSONField', 'SlugField',
+    'SmallIntegerField', 'TextField', 'TimeField', 'URLField', 'UUIDField')
+
+
 import json
 from django.db import models
 from django.core.serializers.json import DjangoJSONEncoder

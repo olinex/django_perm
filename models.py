@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 
 '''
 Created on 2017年4月23日
@@ -7,137 +7,142 @@ Created on 2017年4月23日
 @author: olin
 '''
 import uuid
-from django.conf import settings
 from datetime import timedelta
-from djangoperm.db import fields
-from djangoperm.db.models import Model
-from django.db import models
+
+from django.conf import settings
 from django.contrib.auth.models import Permission
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+from django.db import models
+from django.db.models import PROTECT,CASCADE,SET_NULL,SET,SET_DEFAULT,DO_NOTHING
+
+from apps.djangoperm.db.models import Model
+from apps.djangoperm.db.fields import *
+
 
 class Test(Model):
     '''
     test perm field
     '''
-    test_big_auto=fields.BigAutoField(
+    test_big_auto = BigAutoField(
         default=1,
-        primary_key=True,perms={'read':True,'write':True})
+        primary_key=True, perms={'read': True, 'write': True})
 
-    test_bool=fields.BooleanField(
+    test_bool = BooleanField(
         default=False,
-        perms={'read':True,'write':True})
+        perms={'read': True, 'write': True})
 
-    test_date=fields.DateField(
+    test_date = DateField(
         auto_now_add=True,
-        perms={'read':True,'write':True})
+        perms={'read': True, 'write': True})
 
-    test_date_time=fields.DateTimeField(
+    test_date_time = DateTimeField(
         auto_now_add=True,
-        perms={'read':True,'write':True})
+        perms={'read': True, 'write': True})
 
-    test_decimal=fields.DecimalField(
+    test_decimal = DecimalField(
         default=0.00,
         decimal_places=2,
         max_digits=8,
-        perms={'read':True,'write':True})
+        perms={'read': True, 'write': True})
 
-    test_duration=fields.DurationField(
+    test_duration = DurationField(
         default=timedelta(microseconds=100),
-        perms={'read':True,'write':True})
+        perms={'read': True, 'write': True})
 
-    test_email=fields.EmailField(
+    test_email = EmailField(
         default='test@test.com',
-        perms={'read':True,'write':True})
+        perms={'read': True, 'write': True})
 
-    test_filepath=fields.FilePathField(
+    test_filepath = FilePathField(
         default='',
-        perms={'read':True,'write':True})
+        perms={'read': True, 'write': True})
 
-    test_float=fields.FloatField(
+    test_float = FloatField(
         default=0.0,
-        perms={'read':True,'write':True})
+        perms={'read': True, 'write': True})
 
-    test_big_int=fields.BigIntegerField(
+    test_big_int = BigIntegerField(
         default=0,
-        perms={'read':True,'write':True})
+        perms={'read': True, 'write': True})
 
-    test_generic_ip=fields.GenericIPAddressField(
+    test_generic_ip = GenericIPAddressField(
         default='192.168.1.1',
-        perms={'read':True,'write':True})
+        perms={'read': True, 'write': True})
 
-    test_null_bool=fields.NullBooleanField(
+    test_null_bool = NullBooleanField(
         default=None,
-        perms={'read':True,'write':True})
+        perms={'read': True, 'write': True})
 
-    test_pos_int=fields.PositiveIntegerField(
+    test_pos_int = PositiveIntegerField(
         default=1,
-        perms={'read':True,'write':True})
+        perms={'read': True, 'write': True})
 
-    test_pos_small_int=fields.PositiveSmallIntegerField(
+    test_pos_small_int = PositiveSmallIntegerField(
         default=2,
-        perms={'read':True,'write':True})
+        perms={'read': True, 'write': True})
 
-    test_slug=fields.SlugField(
+    test_slug = SlugField(
         default='',
-        perms={'read':True,'write':True})
+        perms={'read': True, 'write': True})
 
-    test_small_int=fields.SmallIntegerField(
+    test_small_int = SmallIntegerField(
         default=3,
-        perms={'read':True,'write':True})
-    test_text=fields.TextField(
+        perms={'read': True, 'write': True})
+    test_text = TextField(
         default='test for text',
-        perms={'read':True,'write':True})
+        perms={'read': True, 'write': True})
 
-    test_time=fields.TimeField(
+    test_time = TimeField(
         auto_now_add=True,
-        perms={'read':True,'write':True})
+        perms={'read': True, 'write': True})
 
-    test_url=fields.URLField(
+    test_url = URLField(
         default='www.google.com',
-        perms={'read':True,'write':True})
+        perms={'read': True, 'write': True})
 
-    test_bin=fields.BinaryField(
+    test_bin = BinaryField(
         default=b'111',
-        perms={'read':True,'write':True})
-    test_uuid=fields.UUIDField(
+        perms={'read': True, 'write': True})
+    test_uuid = UUIDField(
         default=uuid.uuid4,
-        perms={'read':True,'write':True})
+        perms={'read': True, 'write': True})
 
-    test_char=fields.CharField(
+    test_char = CharField(
         'test_char',
         max_length=14,
-        perms={'read':True,'write':True},
+        perms={'read': True, 'write': True},
         help_text='a perm CharField')
 
-    test_int=fields.IntegerField(
+    test_int = IntegerField(
         'test_int',
         default=1,
-        perms={'read':True,'write':True},
+        perms={'read': True, 'write': True},
         help_text='a perm IntegerField')
 
-    test_json_list=fields.JSONField(
+    test_json_list = JSONField(
         'test_json_list',
         json_type='list',
-        default=[1,2,3,4],
-        perms={'read':True,'write':True},
+        default=[1, 2, 3, 4],
+        perms={'read': True, 'write': True},
         help_text="json list"
     )
 
-    test_json_dict=fields.JSONField(
+    test_json_dict = JSONField(
         'test_json_dict',
         json_type='dict',
-        perms={'read':True,'write':True},
-        default={'read':True,'write':False},
+        perms={'read': True, 'write': True},
+        default={'read': True, 'write': False},
         help_text="json dict"
     )
+
 
 class PermInstance(models.Model):
     '''
     This table related the Model instance and user that can control user's 
     accessing of instance
     '''
-    user=models.ForeignKey(
+    user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         null=False,
         blank=False,
@@ -145,43 +150,43 @@ class PermInstance(models.Model):
         related_name='access_instance',
         verbose_name='access user',
         help_text="user who can access the instance")
-    
-    codename=models.CharField(
+
+    codename = models.CharField(
         'code_name',
         max_length=94,
         null=False,
         blank=False,
         help_text="object permission's code name")
-    
-    contentType=models.ForeignKey(
+
+    contentType = models.ForeignKey(
         ContentType,
         blank=False,
         null=False,
         on_delete=models.CASCADE,
         verbose_name='model',
         help_text="instance's model")
-    
-    instanceId=models.PositiveIntegerField(
+
+    instanceId = models.PositiveIntegerField(
         'instance_id',
         null=False,
         blank=False,
         db_index=True,
         help_text="instance's id")
-    
-    createTime=models.DateTimeField(
+
+    createTime = models.DateTimeField(
         'create_time',
         auto_now_add=True,
         db_index=True)
-    
-    obj=GenericForeignKey('contentType','instanceId')
-    
+
+    obj = GenericForeignKey('contentType', 'instanceId')
+
     class Meta:
-        verbose_name='对象权限实例'
-        verbose_name_plural='对象权限实例'
-        unique_together=('user','codename','instanceId','contentType')
-        
+        verbose_name = '对象权限实例'
+        verbose_name_plural = '对象权限实例'
+        unique_together = ('user', 'codename', 'instanceId', 'contentType')
+
     @classmethod
-    def get_all_codenames(cls,user,obj=None):
+    def get_all_codenames(cls, user, obj=None):
         '''
         when obj is a django Model,it will return all codenames about the user and Model
         when obj is a Model instance,it will return all codenames about the user and instance
@@ -189,18 +194,18 @@ class PermInstance(models.Model):
         @param obj:a Model or an instance
         @return: set of codenames
         '''
-        option={'user':user}
-        if isinstance(obj,models.Model):
-            option['contentType']=ContentType.objects.get_for_model(obj)
-            option['instanceId']=obj.pk
+        option = {'user': user}
+        if isinstance(obj, models.Model):
+            option['contentType'] = ContentType.objects.get_for_model(obj)
+            option['instanceId'] = obj.pk
         elif type(models.Model) is type(obj):
-            option['contentType']=ContentType.objects.get_for_model(obj)
+            option['contentType'] = ContentType.objects.get_for_model(obj)
         else:
             return set()
-        return set(cls.objects.filter(**option).values_list('codename',flat=True))
-        
+        return set(cls.objects.filter(**option).values_list('codename', flat=True))
+
     @classmethod
-    def set_instance_perm(cls,codename,user,obj):
+    def set_instance_perm(cls, codename, user, obj):
         '''
         create a permission about obj and user
         @param codename: a string about the permission
@@ -208,19 +213,39 @@ class PermInstance(models.Model):
         @param obj:an Model instance
         '''
         if user.is_authenticated:
-            ct=ContentType.objects.get_for_model(obj)
+            ct = ContentType.objects.get_for_model(obj)
             return cls.objects.get_or_create(
                 codename=codename,
                 user=user,
                 contentType=ct,
                 instanceId=obj.pk)
-        return (None,False)
+        return (None, False)
+
+    @classmethod
+    def clear_perm(cls, user=None, obj=None, codename=None):
+        '''
+        clear all permissions which select out by user and obj
+        :param user: None or instance of User
+        :param obj: None or instance of Model
+        :return: None
+        '''
+        from django.db.models import Q
+        if user or obj or codename:
+            query = Q()
+            if user:
+                query &= Q(user=user)
+            if obj:
+                ct = ContentType.objects.get_for_mode(obj)
+                query &= Q(contentType=ct) & Q(instanceId=obj.pk)
+            if codename:
+                query &= Q(codename=codename)
+            cls.objects.filter(query).delete()
 
 class View(models.Model):
     '''
     the model of every view
     '''
-    app_label = fields.CharField(
+    app_label = models.CharField(
         'app label',
         null=False,
         blank=False,
@@ -228,7 +253,7 @@ class View(models.Model):
         help_text="view's app name"
     )
 
-    name = fields.CharField(
+    name = models.CharField(
         'view name',
         null=False,
         blank=False,
@@ -236,16 +261,16 @@ class View(models.Model):
         help_text="view's name"
     )
 
-    method = fields.CharField(
+    method = models.CharField(
         'access method',
         null=False,
         blank=False,
         max_length=10,
-        choices=((method,method.lower()) for method in settings.ALLOWED_METHODS),
+        choices=((method, method.lower()) for method in settings.ALLOWED_METHODS),
         help_text="the method to access view",
     )
 
-    permission = fields.ForeignKey(
+    permission = models.ForeignKey(
         Permission,
         null=False,
         blank=False,
@@ -254,8 +279,8 @@ class View(models.Model):
     )
 
     class Meta:
-        verbose_name='视图权限实例'
-        verbose_name_plural='视图权限实例'
-        unique_together=[
-            ('app_label','method','name'),
+        verbose_name = '视图权限实例'
+        verbose_name_plural = '视图权限实例'
+        unique_together = [
+            ('app_label', 'method', 'name'),
         ]

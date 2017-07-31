@@ -1,6 +1,8 @@
 
 import os
+
 import django
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "djangoperm_test.settings")
 django.setup()
 
@@ -9,8 +11,7 @@ import string
 from django.contrib.auth.models import AnonymousUser
 from django.test import TestCase, Client
 from .models import Test
-from django.conf import settings
-from djangoperm.db.query import NotAllow
+from apps.djangoperm.db.query import NotAllow
 from django.contrib.auth import get_user_model
 
 User=get_user_model()
@@ -51,7 +52,7 @@ class ViewPermDecoratorCase(TestCase):
 class PermInstanceCase(TestCase):
     
     def setUp(self):
-        from djangoperm.models import PermInstance
+        from .models import PermInstance
         self.demo=PermInstance
         self.superuser=User.objects.create_superuser(
             username='testsuperuser',
@@ -73,7 +74,7 @@ class PermInstanceCase(TestCase):
         self.demo.set_instance_perm('test2',self.anonuser,self.anonuser)
         
     def test_set_instance_perm(self):
-        from djangoperm.utils import set_instance_perm
+        from .utils import set_instance_perm
         for perm in ['test','test1','test2']:
             superuser_perm=set_instance_perm(perm,self.superuser,self.superuser)
             normaluser_perm=set_instance_perm(perm,self.normaluser,self.normaluser)

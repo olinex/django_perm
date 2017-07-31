@@ -10,10 +10,6 @@ Created on 2017年4月14日
 from django.db import models
 from .manager import PermManager
 from django.contrib.auth.models import AnonymousUser
-from .fields import *
-from django.db.models.deletion import (
-    CASCADE, DO_NOTHING, PROTECT, SET, SET_DEFAULT, SET_NULL, ProtectedError,
-)
 
 class Model(models.Model):
     def su(self,user=AnonymousUser(),*,raise_error=False):

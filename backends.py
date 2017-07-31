@@ -7,6 +7,8 @@ Created on 2017年4月23日
 @author: olin
 '''
 
+__all__ = ('ObjectPermissionBackend',)
+
 from .models import PermInstance
 
 class ObjectPermissionBackend(object):
