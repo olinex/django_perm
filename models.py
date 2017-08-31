@@ -15,7 +15,6 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import PROTECT,CASCADE,SET_NULL,SET,SET_DEFAULT,DO_NOTHING
-
 from apps.djangoperm.db.models import Model
 from apps.djangoperm.db.fields import *
 
@@ -152,13 +151,13 @@ class PermInstance(models.Model):
         help_text="user who can access the instance")
 
     codename = models.CharField(
-        'code_name',
+        'code name',
         max_length=94,
         null=False,
         blank=False,
         help_text="object permission's code name")
 
-    contentType = models.ForeignKey(
+    content_type = models.ForeignKey(
         ContentType,
         blank=False,
         null=False,
@@ -166,24 +165,24 @@ class PermInstance(models.Model):
         verbose_name='model',
         help_text="instance's model")
 
-    instanceId = models.PositiveIntegerField(
-        'instance_id',
+    instance_id = models.PositiveIntegerField(
+        'instance id',
         null=False,
         blank=False,
         db_index=True,
         help_text="instance's id")
 
-    createTime = models.DateTimeField(
-        'create_time',
+    create_time = models.DateTimeField(
+        'create time',
         auto_now_add=True,
         db_index=True)
 
-    obj = GenericForeignKey('contentType', 'instanceId')
+    obj = GenericForeignKey('content_type', 'instance_id')
 
     class Meta:
         verbose_name = '对象权限实例'
         verbose_name_plural = '对象权限实例'
-        unique_together = ('user', 'codename', 'instanceId', 'contentType')
+        unique_together = ('user', 'codename', 'instance_id', 'content_type')
 
     @classmethod
     def get_all_codenames(cls, user, obj=None):
@@ -196,10 +195,10 @@ class PermInstance(models.Model):
         '''
         option = {'user': user}
         if isinstance(obj, models.Model):
-            option['contentType'] = ContentType.objects.get_for_model(obj)
-            option['instanceId'] = obj.pk
+            option['content_type'] = ContentType.objects.get_for_model(obj)
+            option['instance_id'] = obj.pk
         elif type(models.Model) is type(obj):
-            option['contentType'] = ContentType.objects.get_for_model(obj)
+            option['content_type'] = ContentType.objects.get_for_model(obj)
         else:
             return set()
         return set(cls.objects.filter(**option).values_list('codename', flat=True))
@@ -217,8 +216,8 @@ class PermInstance(models.Model):
             return cls.objects.get_or_create(
                 codename=codename,
                 user=user,
-                contentType=ct,
-                instanceId=obj.pk)
+                content_type=ct,
+                instance_id=obj.pk)
         return (None, False)
 
     @classmethod
@@ -236,7 +235,7 @@ class PermInstance(models.Model):
                 query &= Q(user=user)
             if obj:
                 ct = ContentType.objects.get_for_mode(obj)
-                query &= Q(contentType=ct) & Q(instanceId=obj.pk)
+                query &= Q(content_type=ct) & Q(instance_id=obj.pk)
             if codename:
                 query &= Q(codename=codename)
             cls.objects.filter(query).delete()

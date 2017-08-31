@@ -8,15 +8,15 @@ from . import models
 
 @admin.register(models.PermInstance)
 class PermInstanceAdmin(admin.ModelAdmin):
-    list_display = ('id','codename','user','obj','createTime')
-    list_filter = ('createTime',)
+    list_display = ('id','codename','user','obj','create_time')
+    list_filter = ('create_time',)
     search_fields = ('codename',)
     list_editable = ('codename',)
     fieldsets = (
         (None,{'fields':(
             'codename',
             'user',
-            ('contentType','instanceId')
+            ('content_type','instance_id')
         )}),
     )
 
