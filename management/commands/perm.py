@@ -16,7 +16,7 @@ def url_recursive(urls):
     for url in urls.urlpatterns:
         if RegexURLPattern == type(url):
             if url.name:
-                url_set |= set((url.name,))
+                url_set |= set(url.name,)
             else:
                 raise CommandError(
                     "The url of {} must have name".format(url.callback.__name__)

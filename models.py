@@ -11,6 +11,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.auth.models import Permission
+from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -146,42 +147,41 @@ class PermInstance(models.Model):
         null=False,
         blank=False,
         on_delete=models.CASCADE,
-        related_name='access_instance',
-        verbose_name='access user',
-        help_text="user who can access the instance")
+        verbose_name=_('access user'),
+        help_text=_('user who can access the instance'))
 
     codename = models.CharField(
-        'code name',
+        _('code name'),
         max_length=94,
         null=False,
         blank=False,
-        help_text="object permission's code name")
+        help_text=_("object permission's code name"))
 
     content_type = models.ForeignKey(
         ContentType,
         blank=False,
         null=False,
         on_delete=models.CASCADE,
-        verbose_name='model',
-        help_text="instance's model")
+        verbose_name=_('model'),
+        help_text=_("instance's model"))
 
     instance_id = models.PositiveIntegerField(
-        'instance id',
+        _('instance id'),
         null=False,
         blank=False,
         db_index=True,
-        help_text="instance's id")
+        help_text=_("instance's id"))
 
     create_time = models.DateTimeField(
-        'create time',
+        _('create time'),
         auto_now_add=True,
         db_index=True)
 
     obj = GenericForeignKey('content_type', 'instance_id')
 
     class Meta:
-        verbose_name = '对象权限实例'
-        verbose_name_plural = '对象权限实例'
+        verbose_name = _('object permission instance')
+        verbose_name_plural = _('object permission instances')
         unique_together = ('user', 'codename', 'instance_id', 'content_type')
 
     @classmethod
@@ -245,41 +245,41 @@ class View(models.Model):
     the model of every view
     '''
     app_label = models.CharField(
-        'app label',
+        _('app label'),
         null=False,
         blank=False,
         max_length=30,
-        help_text="view's app name"
+        help_text=_("view's app name")
     )
 
     name = models.CharField(
-        'view name',
+        _('view name'),
         null=False,
         blank=False,
         max_length=30,
-        help_text="view's name"
+        help_text=_("view's name")
     )
 
     method = models.CharField(
-        'access method',
+        _('access method'),
         null=False,
         blank=False,
         max_length=10,
         choices=((method, method.lower()) for method in settings.ALLOWED_METHODS),
-        help_text="the method to access view",
+        help_text=_("the method to access view"),
     )
 
     permission = models.ForeignKey(
         Permission,
         null=False,
         blank=False,
-        verbose_name='about permission',
-        help_text="The permission of the view"
+        verbose_name=_('about permission'),
+        help_text=_("The permission of the view")
     )
 
     class Meta:
-        verbose_name = '视图权限实例'
-        verbose_name_plural = '视图权限实例'
+        verbose_name = _('view permission')
+        verbose_name_plural = _('view permissions')
         unique_together = [
             ('app_label', 'method', 'name'),
         ]
