@@ -13,6 +13,7 @@ from .models import PermInstance
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django.utils.deconstruct import deconstructible
+from django.urls import RegexURLPattern, RegexURLResolver
 
 set_instance_perm = PermInstance.set_instance_perm
 clear_perm = PermInstance.clear_perm
@@ -23,7 +24,7 @@ def has_view_perm(request):
     check uesr's permission of view
     '''
     if request.user.has_perm(
-            'djangoperm.{}_{}_{}'.format(
+            'django_perm.{}_{}_{}'.format(
                 request.method.upper(),
                 request.resolver_match.app_name,
                 request.resolver_match.url_name)):
@@ -65,6 +66,27 @@ class UserPermissionValidator(object):
                 code=self.code,
                 params={'user': value, 'permissions': ','.join(self.permissions)}
             )
+
+def url_recursive(urls):
+    url_set = set()
+    for url in urls.urlpatterns:
+        if RegexURLPattern == type(url):
+            if url.name:
+                url_set.add(url.name)
+            else:
+                raise AttributeError(
+                    "The url of {} must have name".format(url.callback.__name__)
+                )
+        elif RegexURLResolver == type(url):
+            url_set |= url_recursive(url)
+        else:
+            raise TypeError(
+                "unknown url {} contain in {}".format(
+                    url.__name__,
+                    urls.__name__
+                )
+            )
+    return url_set
 
 # def method_view_perm_required(*methods,strict=False):
 #     '''

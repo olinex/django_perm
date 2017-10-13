@@ -7,30 +7,8 @@ Created on 2017年4月20日
 @author: olin
 '''
 
+from django_perm.utils import url_recursive
 from django.core.management.base import BaseCommand, CommandError
-from django.urls import RegexURLPattern, RegexURLResolver
-
-
-def url_recursive(urls):
-    url_set=set()
-    for url in urls.urlpatterns:
-        if RegexURLPattern == type(url):
-            if url.name:
-                url_set |= set(url.name,)
-            else:
-                raise CommandError(
-                    "The url of {} must have name".format(url.callback.__name__)
-                )
-        elif RegexURLResolver == type(url):
-            url_set |= url_recursive(url)
-        else:
-            raise CommandError(
-                "unknown url {} contain in {}".format(
-                    url.__name__,
-                    urls.__name__
-                )
-            )
-    return url_set
 
 class Command(BaseCommand):
     '''write all field permissions into django Permission table'''
@@ -63,7 +41,7 @@ class Command(BaseCommand):
         from django.db import transaction
         from django.contrib.auth.models import Permission
         from django.contrib.contenttypes.models import ContentType
-        from apps.djangoperm import View
+        from django_perm.models import View
         error_apps=[app for app in options['app_names'] if app not in settings.INSTALLED_APPS]
         if error_apps:
             raise CommandError('Unknown apps:{}'.format(','.join(error_apps)))

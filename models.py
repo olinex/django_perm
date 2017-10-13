@@ -16,8 +16,8 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import PROTECT,CASCADE,SET_NULL,SET,SET_DEFAULT,DO_NOTHING
-from apps.djangoperm.db.models import Model
-from apps.djangoperm.db.fields import *
+from django_perm.db.models import Model
+from django_perm.db.fields import *
 
 
 class Test(Model):

@@ -1,17 +1,10 @@
 
-import os
-
-import django
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "djangoperm_test.settings")
-django.setup()
-
 import random
 import string
 from django.contrib.auth.models import AnonymousUser
 from django.test import TestCase, Client
 from .models import Test
-from apps.djangoperm.db.query import NotAllow
+from django_perm.db.query import NotAllow
 from django.contrib.auth import get_user_model
 
 User=get_user_model()

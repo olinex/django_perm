@@ -7,5 +7,5 @@ Created on 2017年4月12日
 @author: olin
 '''
 
-default_app_config = 'apps.djangoperm.apps.DjangopermConfig'
+default_app_config = 'django_perm.apps.DjangoPermConfig'
         

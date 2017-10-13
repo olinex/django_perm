@@ -5,6 +5,6 @@ from django.apps import AppConfig
 from django.utils.translation import ugettext_lazy as _
 
 
-class DjangopermConfig(AppConfig):
-    name = 'apps.djangoperm'
+class DjangoPermConfig(AppConfig):
+    name = 'django_perm'
     verbose_name = _('django permission config')
