@@ -101,9 +101,6 @@ class Test(Model):
         default='www.google.com',
         perms={'read': True, 'write': True})
 
-    test_bin = BinaryField(
-        default=None,
-        perms={'read': True, 'write': True})
     test_uuid = UUIDField(
         default=uuid.uuid4,
         perms={'read': True, 'write': True})
