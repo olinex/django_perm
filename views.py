@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding:utf-8 -*-
+
 # Create your views here.
 from django.http.response import HttpResponse
 

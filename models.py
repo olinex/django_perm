@@ -102,7 +102,7 @@ class Test(Model):
         perms={'read': True, 'write': True})
 
     test_bin = BinaryField(
-        default=b'111',
+        default=None,
         perms={'read': True, 'write': True})
     test_uuid = UUIDField(
         default=uuid.uuid4,
