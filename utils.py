@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 
-'''
+"""
 Created on 2017年4月23日
 
 @author: olin
-'''
+"""
 
-__all__ = ('set_instance_perm','clear_perm','has_view_perm','view_perm_required')
+__all__ = ['set_instance_perm','clear_perm','has_view_perm','view_perm_required']
 
 from .models import PermInstance
 from django.core.exceptions import ValidationError
@@ -20,9 +20,9 @@ clear_perm = PermInstance.clear_perm
 
 
 def has_view_perm(request):
-    '''
+    """
     check uesr's permission of view
-    '''
+    """
     if request.user.has_perm(
             'django_perm.{}_{}_{}'.format(
                 request.method.upper(),
@@ -33,9 +33,9 @@ def has_view_perm(request):
 
 
 def view_perm_required(func):
-    '''
+    """
     a decorator that required user must have method permission
-    '''
+    """
 
     def wrapper(*args, **kwargs):
         from django.http.request import HttpRequest
@@ -89,10 +89,10 @@ def url_recursive(urls):
     return url_set
 
 # def method_view_perm_required(*methods,strict=False):
-#     '''
+#     """
 #     a decorator that required user must have method permission
 #     if strict is True,method must be one of the methods
-#     '''
+#     """
 #     def wrapper(func):
 #         def inner_wrapper(*args,**kwargs):
 #             from django.http.request import HttpRequest

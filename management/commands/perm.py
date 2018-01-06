@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 
-'''
+"""
 Created on 2017年4月20日
 
 @author: olin
-'''
+"""
 
 from django_perm.utils import url_recursive
 from django.core.management.base import BaseCommand, CommandError
 
 class Command(BaseCommand):
-    '''write all field permissions into django Permission table'''
+    """write all field permissions into django Permission table"""
     
     def add_arguments(self, parser):
         parser.add_argument(

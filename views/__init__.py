@@ -9,4 +9,4 @@ from django_perm.utils import view_perm_required
 
 @view_perm_required
 def test_view(request):
-    return HttpResponse(request,'good')
+    return HttpResponse(request, 'good')

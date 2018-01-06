@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 
-'''
+"""
 Created on 2017年4月16日
 
 @author: olin
-'''
+"""
 
 from django.db import models
 
 class NotAllow(object):
-    '''
+    """
     when perm field was checked and not allow by user,the instance of the class will return
-    '''
+    """
     def __init__(self,value,name,field):
         if isinstance(field,models.Field):
             self._value=value
@@ -67,10 +67,10 @@ class NotAllow(object):
         return 0
 
 class PermInstanceWrapper(object):
-    '''
+    """
     a wrapper that contain model instance and user attrs that can check field permission
     when writting or reading permission restrict fields
-    '''
+    """
     def __init__(self,instance,user,*,raise_error=False):
         self._instance=instance
         self._user=user
@@ -168,9 +168,9 @@ class PermFlatValuesListIterable(PermBaseIterable,models.query.FlatValuesListIte
             
 class PermQuerySet(models.query.QuerySet):
     def __init__(self, model=None, query=None, using=None, hints=None,*,user,raise_error=False):
-        '''
+        """
         must provide user value when QuerySet is initializing
-        '''
+        """
         super(PermQuerySet,self).__init__(model,query,using,hints)
         self._user=user
         self._raise_error=raise_error

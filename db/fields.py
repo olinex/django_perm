@@ -1,34 +1,36 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 
-'''
+"""
 Created on 2017年4月12日
 
 @author: olin
-'''
+"""
 
-__all__ = (
+__all__ = [
     'AutoField', 'BigAutoField', 'BigIntegerField',
     'BinaryField', 'BooleanField', 'CharField', 'DateField',
     'DateTimeField', 'DecimalField', 'DurationField',
     'EmailField', 'Field', 'FilePathField', 'FloatField', 'ForeignKey',
-    'GenericIPAddressField', 'IntegerField', 'JSONField', 'ManyToManyField',
+    'GenericIPAddressField', 'IntegerField', 'ManyToManyField',
     'NullBooleanField', 'OneToOneField', 'PermFieldMixin', 'PositiveIntegerField',
-    'PositiveSmallIntegerField', 'ShortJSONField', 'SlugField',
-    'SmallIntegerField', 'TextField', 'TimeField', 'URLField', 'UUIDField')
-
+    'PositiveSmallIntegerField', 'JSONField', 'SimpleJSONField', 'BaseJSONField', 'SlugField',
+    'SmallIntegerField', 'TextField', 'TimeField', 'URLField', 'UUIDField', 'ImageField'
+]
 
 import json
 from django.db import models
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.exceptions import ValidationError
 
+ImageField = models.ImageField
+
 
 def _perm_init(field, perms):
-    '''
+    """
     register the default field permissions to fields
     @param perms:a dict that contain both 'read' and 'write' attributes,which value must be the one of True/False/'strict'
-    '''
+    """
     if perms:
         if len(perms) == 2:
             for key, value in perms.items():
@@ -43,9 +45,9 @@ def _perm_init(field, perms):
 
 class PermFieldMixin(object):
     def get_perm_label(self, perm_type):
-        '''
+        """
         return string of app label,model label and field name
-        '''
+        """
         if perm_type in ('read', 'write'):
             return '{}.{}_{}_{}'.format(
                 self.model._meta.app_label,
@@ -55,9 +57,9 @@ class PermFieldMixin(object):
         raise ValueError("perm_type must be 'write' or 'read'")
 
     def get_perm_tuple(self, perm_type):
-        '''
+        """
         return field's permission help text
-        '''
+        """
         return (
             '{}_{}_{}'.format(
                 perm_type,
@@ -371,76 +373,56 @@ class UUIDField(models.UUIDField, PermFieldMixin):
         return name, path, args, kwargs
 
 
-class JSONField(TextField):
-    def _json_serializer(self, value):
+class BaseJSONField(object):
+    """the field have the method for manage json string"""
+    form = 'all'
+    forms = {'int': int, 'str': str, 'bool': bool, 'list': list, 'dict': dict}
+
+    def loads(self, value):
         if value is None:
             return value
-        json_value = json.loads(value)
-        if isinstance(json_value, eval(self.json_type)):
-            return json_value
-        raise ValidationError("value from database must be json string of {}".format(self.json_type))
+        return json.loads(value)
 
-    def __init__(self, *args, json_type='list', **kwargs):
-        type_list = ['list', 'dict']
-        if json_type in type_list:
-            self.json_type = json_type
+    def dumps(self, value):
+        if value is None:
+            return value
+        if (
+                    (self.form == 'all' and isinstance(value, tuple(self.forms.values()))) or
+                    isinstance(value, (self.forms[self.form]))
+        ):
+            return json.dumps(value, cls=DjangoJSONEncoder,sort_keys=True)
+        raise ValidationError("value from user must be int,string,bool,list,dict")
+
+    def from_db_value(self, value, expression, connection, context):
+        return self.loads(value)
+
+    def to_python(self, value):
+        return self.loads(value)
+
+    def get_prep_value(self, value):
+        return self.dumps(value)
+
+
+class SimpleJSONField(BaseJSONField, CharField):
+    def __init__(self, *args, form='all', **kwargs):
+        if form in self.forms.keys() or form == 'all':
+            kwargs['null'] = True
+            kwargs['blank'] = False
+            self.form = form
+            super(SimpleJSONField, self).__init__(*args, **kwargs)
+        else:
+            raise ValueError("form must be one of " + ','.join(self.forms.keys()))
+
+
+class JSONField(BaseJSONField, TextField):
+    def __init__(self, *args, form='all', **kwargs):
+        if form in self.forms.keys() or form == 'all':
+            kwargs['null'] = True
+            kwargs['blank'] = False
+            self.form = form
             super(JSONField, self).__init__(*args, **kwargs)
         else:
-            raise ValueError("json_type must be one of " + ','.join(type_list))
-
-    def deconstruct(self):
-        name, path, args, kwargs = super(JSONField, self).deconstruct()
-        kwargs['json_type'] = self.json_type
-        return name, path, args, kwargs
-
-    def from_db_value(self, value, expression, connection, context):
-        return self._json_serializer(value)
-
-    def to_python(self, value):
-        return self._json_serializer(value)
-
-    def get_prep_value(self, value):
-        if value is None or value == '':
-            return value
-        if isinstance(value, eval(self.json_type)):
-            return json.dumps(value, cls=DjangoJSONEncoder)
-        raise ValidationError("value from user must be {} type object".format(self.json_type))
-
-
-class ShortJSONField(CharField):
-    def _json_serializer(self, value):
-        if value is None:
-            return value
-        json_value = json.loads(value)
-        if isinstance(json_value, list if self.json_type == 'list' else dict):
-            return json_value
-        raise ValidationError("value from database must be json string of {}".format(self.json_type))
-
-    def __init__(self, *args, json_type='list', **kwargs):
-        type_list = ['list', 'dict']
-        if json_type in type_list:
-            self.json_type = json_type
-            super(ShortJSONField, self).__init__(*args, **kwargs)
-        else:
-            raise ValueError("json_type must be one of " + ','.join(type_list))
-
-    def deconstruct(self):
-        name, path, args, kwargs = super(ShortJSONField, self).deconstruct()
-        kwargs['json_type'] = self.json_type
-        return name, path, args, kwargs
-
-    def from_db_value(self, value, expression, connection, context):
-        return self._json_serializer(value)
-
-    def to_python(self, value):
-        return self._json_serializer(value)
-
-    def get_prep_value(self, value):
-        if value is None or value == '':
-            return value
-        if isinstance(value, list if self.json_type == 'list' else dict):
-            return json.dumps(value, cls=DjangoJSONEncoder)
-        raise ValidationError("value from user must be {} type object".format(self.json_type))
+            raise ValueError("form must be one of " + ','.join(self.forms.keys()))
 
 
 ForeignKey = models.ForeignKey

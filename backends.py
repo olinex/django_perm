@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 
-'''
+"""
 Created on 2017年4月23日
 
 @author: olin
-'''
+"""
 
-__all__ = ('ObjectPermissionBackend',)
+__all__ = ['ObjectPermissionBackend']
 
 from .models import PermInstance
 
 class ObjectPermissionBackend(object):
-    '''
+    """
     A backend that can reset user's has_perm method
-    '''
+    """
     def authenticate(self,username,password):
         return None
     
